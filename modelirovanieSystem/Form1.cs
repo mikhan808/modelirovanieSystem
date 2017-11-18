@@ -41,9 +41,26 @@ namespace modelirovanieSystem
             vremya.Text = time + "";
             maxDlina.Text = oos.max + "";
             SrDlina.Text = (double)((double)oos.sum / (double)time) + "";
+            OOS oos2 = new OOS(ll, tt1, tt2, pp1, KK, Convert.ToInt32(textBox5.Text), Convert.ToInt32(textBox6.Text));
+            oos2.start();
+            textBox4.Text = oos2.getOcherdCount() + "";
+            time = oos2.time;
+            textBox3.Text = time + "";
+            textBox2.Text = oos2.max + "";
+            textBox1.Text = (double)((double)oos2.sum / (double)time) + "";
         }
 
         private void l_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label14_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox5_TextChanged(object sender, EventArgs e)
         {
 
         }

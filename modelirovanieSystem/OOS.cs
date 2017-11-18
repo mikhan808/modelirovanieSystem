@@ -18,9 +18,13 @@ namespace modelirovanieSystem
         double p1;// вероятность появления требования первого типа
         double p2;// вероятность появления требования второго типа
         int K;//Нужное Количество обработанных требований;
-        int S=0;//Количество обработанных требований
+        int S = 0;//Количество обработанных требований
+        int A;
+        int B;
         public int max = 0;
-        public int sum = 0; 
+        public int sum = 0;
+        bool secondZadanie;
+        int next_raspred_time;
         public OOS(double l, int t1, int t2, double p1, int K)
         {
             this.l = l;
@@ -30,6 +34,14 @@ namespace modelirovanieSystem
             this.p1 = p1;
             p2 = 1 - p1;
             this.K = K;
+            secondZadanie = false;
+        }
+        public OOS(double l, int t1, int t2, double p1, int K, int A, int B) : this(l, t1, t2, p1, K)
+        {
+            this.A = A;
+            this.B = B;
+            secondZadanie = true;
+            next_raspred_time = A;
         }
 
         public void addTrebovanie(Trebovanie t)//добавления требования в очередь
@@ -48,8 +60,8 @@ namespace modelirovanieSystem
                     obrabotano = true;
                     S++;
                     int extime = getExponentTime(t2);
-                    File.AppendAllText("log.txt", extime + "\n");
-                    next_obrabotka_time = time +extime;// и обрабатываем в течении времени полученному по Экспоненциальному распределению
+                    //File.AppendAllText("log.txt", extime + "\n");
+                    next_obrabotka_time = time + extime;// и обрабатываем в течении времени полученному по Экспоненциальному распределению
                     break;
                 }
             }
@@ -60,7 +72,7 @@ namespace modelirovanieSystem
                     ochered.RemoveAt(0);
                     S++;
                     int extime = getExponentTime(t1);
-                    File.AppendAllText("log.txt", extime + "\n");
+                    //File.AppendAllText("log.txt", extime + "\n");
                     next_obrabotka_time = time + extime;//обрабатываем первое в очереди требование первого типа
                 }
                 else next_obrabotka_time++;
@@ -82,7 +94,10 @@ namespace modelirovanieSystem
             {
                 obrabotatTrebovanie();
             }
-            createTrebovaniya(potokPuas());
+            if (secondZadanie)
+                createTrebovaniya(normalRaspred());
+            else
+                createTrebovaniya(potokPuas());
         }
 
         public int getOcherdCount()
@@ -92,7 +107,7 @@ namespace modelirovanieSystem
 
         public void start()
         {
-            while(S<K)
+            while (S < K)
             {
                 transaction();
                 time++;
@@ -103,7 +118,7 @@ namespace modelirovanieSystem
 
         void createTrebovaniya(int count)
         {
-            for(int i=0; i<count; i++)
+            for (int i = 0; i < count; i++)
             {
                 if (rand(p1, randomTrebovaniy.Next()))
                 {
@@ -120,11 +135,24 @@ namespace modelirovanieSystem
             double v3 = Math.Exp(-l);
             return (v1 / v2) * v3;
         }
+        Random randomRaspred = new Random();
+        int normalRaspred()
+        {
+            if (time >= next_raspred_time)
+            {
+                int ravnomer = (int)((B - A) * randomRaspred.NextDouble() + A);
+                next_raspred_time = time + ravnomer;
+                File.AppendAllText("log.txt", ravnomer + "\n");
+                return potokPuas(); //randomGeneral.Next(K);
+
+            }
+            else return 0;
+        }
         int potokPuas()
         {
             int X = randomGeneral.Next(K);
             bool yes = false;
-            while(!yes&&X>0)
+            while (!yes && X > 0)
             {
                 yes = rand(puassonP(l, X), randomPuasson.Next());
                 if (yes)
@@ -137,7 +165,7 @@ namespace modelirovanieSystem
         }
         Random randomPuasson = new Random();
         Random randomGeneral = new Random();
-        bool rand(double p,int rand)
+        bool rand(double p, int rand)
         {
             if (p == 0)
                 return false;
