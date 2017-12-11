@@ -41,7 +41,7 @@ namespace modelirovanieSystem
             this.A = A;
             this.B = B;
             secondZadanie = true;
-            next_raspred_time = A;
+            next_raspred_time = 0;
         }
 
         public void addTrebovanie(Trebovanie t)//добавления требования в очередь
@@ -142,7 +142,7 @@ namespace modelirovanieSystem
             {
                 int ravnomer = (int)((B - A) * randomRaspred.NextDouble() + A);
                 next_raspred_time = time + ravnomer;
-                File.AppendAllText("log.txt", ravnomer + "\n");
+               // File.AppendAllText("log.txt", ravnomer + "\n");
                 return potokPuas(); //randomGeneral.Next(K);
 
             }
